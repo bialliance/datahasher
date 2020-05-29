@@ -1,0 +1,25 @@
+{
+  "name": "datahasher",
+  "version": "1.0.0",
+  "description": "Хешер больших объемных данных для организации системы offchain хранения данных.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bialliance/datahasher.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bialliance/datahasher/issues"
+  },
+  "homepage": "https://github.com/bialliance/datahasher#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "web3": "^1.2.8"
+  }
+}

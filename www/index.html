@@ -1,0 +1,149 @@
+<html>
+	<head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
+		<link
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+
+		<script src="index.js"></script>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="card col-6">
+					<div class="card-body">
+						<h5 class="card-title">Загрузить файл</h5>
+						<p class="card-text">
+							Выберите файл для загрузки в БЧ и нажмите отправить.
+						</p>
+						<form
+							action="/upload"
+							method="POST"
+							enctype="multipart/form-data"
+							onsubmit="return submit1(event)"
+						>
+							<div class="form-group">
+								<label>Файл</label>
+								<input
+									class="form-control"
+									type="file"
+                                    name="file"
+                                    id="file1"
+								/>
+							</div>
+
+							<input
+								class="btn btn-primary"
+								type="submit"
+								value="Отправить"
+							/>
+						</form>
+					</div>
+				</div>
+
+				<div class="card col-6">
+					<div class="card-body">
+						<h5 class="card-title">Проверить файл</h5>
+						<p class="card-text">
+							Выберите файл для проверки и нажмите отправить.
+						</p>
+						<form
+							action="/upload"
+							method="POST"
+                            enctype="multipart/form-data"
+                            onsubmit="return submit2(event)"
+						>
+							<div class="form-group">
+								<label>Uid</label>
+								<input class="form-control" placeholder="uid" id="uid" />
+							</div>
+
+							<div class="form-group">
+								<label>Файл</label>
+								<input
+									class="form-control"
+									type="file"
+                                    name="file"
+                                    id="file2"
+								/>
+							</div>
+
+							<input
+								class="btn btn-primary"
+								type="submit"
+								value="Отправить"
+							/>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<div class="card m-2" id="v_flist">
+				<div class="card-body">
+                    <h5 class="card-title">Список файлов защищенных БЧ</h5>
+                    <div v-for="rec in files">
+                        <b>{{rec.uid}}</b>: {{rec.hash}}
+                    </div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function submit1(e) {
+				e.preventDefault();
+
+				var formData = new FormData();
+				var imagefile = document.querySelector('#file1');
+				formData.append("file", imagefile.files[0]);
+				axios.post("/upload", formData, {
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				}).then(r => {
+                    alert('Файл сохранен!\r\n' + 'uid: ' + r.data.uid + '\r\nhash: ' + r.data.hash);
+                    updateList();
+                    // console.log(r.data)
+                });
+
+				//sendForm(form'#file1')
+            }
+            
+            function submit2(e) {
+				e.preventDefault();
+
+                var formData = new FormData();
+				var imagefile = document.querySelector('#file2');
+                formData.append("file", imagefile.files[0]);
+                formData.append("uid", document.querySelector('#uid').value);
+				axios.post("/check", formData, {
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				}).then(r => {
+                    alert(r.data.success ? 'Файл подтвержден.' : 'Файл НЕ подтвержден!' );
+                    // console.log(r.data)
+                }).catch(ex => alert(ex));
+
+				//sendForm(form'#file1')
+            }  
+
+            var v_flist = new Vue({el: '#v_flist', 
+                data: {
+                    files:[{uid: 1, hash: 20}]
+                }
+            });
+
+            function updateList() {
+                axios.get('/files').then(r => {
+                    v_flist.files = Object.keys(r.data).map(k => ({uid: k, hash: r.data[k]}))
+                })
+            }
+
+            updateList()
+		</script>
+	</body>
+</html>
